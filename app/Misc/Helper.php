@@ -1321,18 +1321,25 @@ class Helper
         // Match the given key at the beginning of a line
         preg_match("/^{$key}=[^\r\n]*/m", $contents, $matches);
         if (count($matches)) {
-            $old_value = substr($matches[0], strlen($key) + 1);
+            $old_value = (string)substr($matches[0], strlen($key) + 1);
         }
 
-        if ($old_value) {
+        if ($old_value !== '') {
             // Replace.
-            $contents = str_replace("{$key}={$old_value}", "{$key}={$value}", $contents);
+            // Only at the beginning of a line, otherwise OTHER_{$key}= would be replaced too.
+            // $contents = str_replace("{$key}={$old_value}", "{$key}={$value}", $contents);
+            $contents = preg_replace_callback('/^'.preg_quote("{$key}={$old_value}", '/').'/m', function () use ($key, $value) {
+                return "{$key}={$value}";
+            }, $contents, 1);
         } else {
             // Add or empty value
             preg_match("/^{$key}=[\r\n]/m", $contents, $matches);
             if (count($matches)) {
                 // Replace empty value
-                $contents = str_replace("{$key}=", "{$key}={$value}", $contents);
+                // $contents = str_replace("{$key}=", "{$key}={$value}", $contents);
+                $contents = preg_replace_callback('/^'.preg_quote("{$key}=", '/').'/m', function () use ($key, $value) {
+                    return "{$key}={$value}";
+                }, $contents, 1);
             } else {
                 // Add.
                 $contents = $contents."\n{$key}={$value}\n";
