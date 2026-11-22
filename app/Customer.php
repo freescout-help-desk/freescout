@@ -184,6 +184,8 @@ class Customer extends Model
     public static $search_filters = [
         'mailbox',
         'company',
+        'country',
+        'city',
     ];
 
     /**
@@ -1434,6 +1436,16 @@ class Customer extends Model
             Storage::delete(self::PHOTO_DIRECTORY.DIRECTORY_SEPARATOR.$this->photo_url);
         }
         $this->photo_url = '';
+    }
+
+    /**
+     * Filter a query by the exact company name.
+     * The comparison ignores the case and the leading/trailing spaces.
+     * The customers table must be present in the query.
+     */
+    public static function applyCompanyExactFilter($query, $company)
+    {
+        return $query->whereRaw('LOWER(TRIM('.\DB::getTablePrefix().'customers.company)) = LOWER(TRIM(?))', [$company]);
     }
 
     public function getCountryName()

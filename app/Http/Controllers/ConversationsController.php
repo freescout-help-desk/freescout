@@ -3289,6 +3289,14 @@ class ConversationsController extends Controller
                         unset($filters[$filter]);
                     }
                     break;
+                case 'company':
+                case 'company_exact':
+                case 'country':
+                case 'city':
+                    if (!is_string($value)) {
+                        unset($filters[$filter]);
+                    }
+                    break;
             }
         }
 
@@ -3365,6 +3373,19 @@ class ConversationsController extends Controller
         if (!empty($filters['company']) && is_string($filters['company'])) {
             $company_like = '%'.mb_strtolower(trim($filters['company'])).'%';
             $query_customers->where('customers.company', \Helper::isPgSql() ? 'ilike' : 'like', $company_like);
+        }
+
+        if (!empty($filters['company_exact']) && is_string($filters['company_exact'])) {
+            Customer::applyCompanyExactFilter($query_customers, $filters['company_exact']);
+        }
+
+        if (!empty($filters['country']) && is_string($filters['country'])) {
+            $query_customers->where('customers.country', '=', strtoupper(trim($filters['country'])));
+        }
+
+        if (!empty($filters['city']) && is_string($filters['city'])) {
+            $city_like = '%'.mb_strtolower(trim($filters['city'])).'%';
+            $query_customers->where('customers.city', \Helper::isPgSql() ? 'ilike' : 'like', $city_like);
         }
 
         $query_customers = \Eventy::filter('search.customers.apply_filters', $query_customers, $filters, $q);

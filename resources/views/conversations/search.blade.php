@@ -78,6 +78,23 @@
 		            <label>{{ __('Company') }} <b class="remove" data-toggle="tooltip" title="{{ __('Remove filter') }}">×</b></label>
 		            <input type="text" name="f[company]" value="{{ $filters['company'] ?? ''}}" class="form-control" @if (empty($filters['company'])) disabled @endif>
 		        </div>
+				<div class="col-sm-6 form-group @if (isset($filters['company_exact'])) active @endif" data-filter="company_exact">
+		            <label>{{ __('Company (exact)') }} <b class="remove" data-toggle="tooltip" title="{{ __('Remove filter') }}">×</b></label>
+		            <input type="text" name="f[company_exact]" value="{{ $filters['company_exact'] ?? ''}}" class="form-control" @if (empty($filters['company_exact'])) disabled @endif>
+		        </div>
+				<div class="col-sm-6 form-group @if (isset($filters['country'])) active @endif" data-filter="country">
+		            <label>{{ __('Country') }} <b class="remove" data-toggle="tooltip" title="{{ __('Remove filter') }}">×</b></label>
+		            <select name="f[country]" class="form-control" @if (empty($filters['country'])) disabled @endif>
+		            	<option value=""></option>
+                        @foreach (App\Customer::$countries as $country_code => $country_name)
+                            <option value="{{ $country_code }}" @if (!empty($filters['country']) && $filters['country'] == $country_code)selected="selected"@endif>{{ __($country_name) }}</option>
+                        @endforeach
+                    </select>
+		        </div>
+				<div class="col-sm-6 form-group @if (isset($filters['city'])) active @endif" data-filter="city">
+		            <label>{{ __('City') }} <b class="remove" data-toggle="tooltip" title="{{ __('Remove filter') }}">×</b></label>
+		            <input type="text" name="f[city]" value="{{ $filters['city'] ?? ''}}" class="form-control" @if (empty($filters['city'])) disabled @endif>
+		        </div>
 				<div class="col-sm-6 form-group @if (isset($filters['status'])) active @endif" data-filter="status">
 		            <label>{{ __('Status') }} <b class="remove" data-toggle="tooltip" title="{{ __('Remove filter') }}">×</b></label>
 		            <select name="f[status][]" class="form-control filter-multiple" multiple @if (empty($filters['status'])) disabled @endif>

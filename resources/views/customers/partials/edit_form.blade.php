@@ -83,7 +83,12 @@
                     <label for="company" class="col-sm-2 control-label">{{ __('Company') }}</label>
 
                     <div class="col-sm-6">
-                        <input id="company" type="text" class="form-control input-sized-lg" name="company" value="{{ old('company', $customer->company) }}" placeholder="{{ __('(optional)') }}" maxlength="255">
+                        <select id="company" class="form-control input-sized-lg" name="company" data-placeholder="{{ __('(optional)') }}">
+                            <option value=""></option>
+                            @if (old('company', $customer->company))
+                                <option value="{{ old('company', $customer->company) }}" selected="selected">{{ old('company', $customer->company) }}</option>
+                            @endif
+                        </select>
 
                         @include('partials/field_error', ['field'=>'company'])
                     </div>

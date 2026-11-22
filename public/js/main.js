@@ -395,6 +395,9 @@ $(document).ready(function(){
 	// Time zone select with search and offset badges
 	initTimezoneSelect();
 
+	// Company select with the search among existing companies
+	initCompanySelect();
+
 	// Editor
 	(function($) {
 		if (typeof($.summernote) != "undefined") {
@@ -459,6 +462,50 @@ $(document).ready(function(){
 		e.preventDefault();
 	});
 }*/
+
+// Company select of the customer form: search among the existing companies or enter a new one.
+function initCompanySelect()
+{
+	var $select = $('select#company:not(.select2-hidden-accessible)');
+
+	if (!$select.length || typeof($.fn.select2) == 'undefined') {
+		return;
+	}
+
+	$select.select2({
+		placeholder: $select.attr('data-placeholder'),
+		allowClear: true,
+		tags: true,
+		// Do not load the list of companies when the dropdown is opened.
+		minimumInputLength: 1,
+		ajax: {
+			url: laroute.route('customers.ajax_search'),
+			dataType: 'json',
+			delay: 250,
+			cache: true,
+			data: function (params) {
+				return {
+					q: params.term,
+					search_by: 'company',
+					page: params.page
+				};
+			}
+		},
+		createTag: function (params) {
+			var term = $.trim(params.term);
+
+			// Company name is limited to 255 characters.
+			if (term === '' || term.length > 255) {
+				return null;
+			}
+			return {
+				id: term,
+				text: term,
+				newOption: true
+			};
+		}
+	});
+}
 
 // Searchable time zone select: zone name on the left, current UTC offset badge on the right.
 function initTimezoneSelect()
