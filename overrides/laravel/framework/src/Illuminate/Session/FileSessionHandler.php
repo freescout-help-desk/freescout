@@ -63,7 +63,6 @@ class FileSessionHandler implements SessionHandlerInterface
 
     /**
      * {@inheritdoc}
-     * : string|false
      */
     #[\ReturnTypeWillChange]
     public function read($sessionId)
@@ -99,7 +98,6 @@ class FileSessionHandler implements SessionHandlerInterface
 
     /**
      * {@inheritdoc}
-     * : int|false
      */
     #[\ReturnTypeWillChange]
     public function gc($lifetime)
@@ -115,5 +113,23 @@ class FileSessionHandler implements SessionHandlerInterface
         }
 
         return false;
+    }
+
+    /**
+     * {@inheritdoc}
+     * Aggiunto per compatibilità PHP 8.6+
+     */
+    public function create_sid(): string
+    {
+        return bin2hex(random_bytes(32));
+    }
+
+    /**
+     * {@inheritdoc}
+     * Aggiunto per compatibilità PHP 8.6+
+     */
+    public function validateId(string $id): bool
+    {
+        return true;
     }
 }
