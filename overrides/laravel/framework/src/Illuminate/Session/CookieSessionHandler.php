@@ -63,8 +63,8 @@ class CookieSessionHandler implements SessionHandlerInterface
 
     /**
      * {@inheritdoc}
-     * #[\\ReturnTypeWillChange]
      */
+    #[\ReturnTypeWillChange]
     public function read($sessionId)
     {
         $value = $this->request->cookies->get($sessionId) ?: '';
@@ -103,8 +103,8 @@ class CookieSessionHandler implements SessionHandlerInterface
 
     /**
      * {@inheritdoc}
-     * #[\\ReturnTypeWillChange]
      */
+    #[\ReturnTypeWillChange]
     public function gc($lifetime)
     {
         return true;
@@ -119,5 +119,23 @@ class CookieSessionHandler implements SessionHandlerInterface
     public function setRequest(Request $request)
     {
         $this->request = $request;
+    }
+
+    /**
+     * {@inheritdoc}
+     * Aggiunto per compatibilità PHP 8.6+
+     */
+    public function create_sid(): string
+    {
+        return bin2hex(random_bytes(32));
+    }
+
+    /**
+     * {@inheritdoc}
+     * Aggiunto per compatibilità PHP 8.6+
+     */
+    public function validateId(string $id): bool
+    {
+        return true;
     }
 }
