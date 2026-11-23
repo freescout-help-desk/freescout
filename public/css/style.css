@@ -261,6 +261,10 @@ body.user-is-guest {
     /*margin-left: 0!important;*/
     border-radius: 0 14px 14px 0;
 }
+.sidebar-buttons .btn-group:last-child a.btn {
+    border-right: 1px solid #d3dae0;
+    border-radius: 14px;
+}
 #conv-list-2col {
     border-bottom: 1px solid #e3e8eb;
     display: block;

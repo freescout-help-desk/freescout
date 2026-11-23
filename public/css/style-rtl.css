@@ -111,6 +111,11 @@ ul.sidebar-block-list {
     border-radius: 14px 0 0 14px !important;
 }
 
+.sidebar-buttons .btn-group:last-child a.btn {
+    border-left: 1px solid #d3dae0;
+    border-radius: 14px !important;
+}
+
 .btn-group-rounded .btn:last-child,
 .btn-group-rounded *:last-child .btn {
     border-radius: 14px 0 0 14px !important;
