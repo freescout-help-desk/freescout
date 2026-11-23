@@ -291,4 +291,22 @@ class DatabaseSessionHandler implements SessionHandlerInterface, ExistenceAwareI
 
         return $this;
     }
+
+    /**
+     * {@inheritdoc}
+     * Aggiunto per compatibilità PHP 8.6+
+     */
+    public function create_sid(): string
+    {
+        return bin2hex(random_bytes(32));
+    }
+
+    /**
+     * {@inheritdoc}
+     * Aggiunto per compatibilità PHP 8.6+
+     */
+    public function validateId(string $id): bool
+    {
+        return true;
+    }
 }
