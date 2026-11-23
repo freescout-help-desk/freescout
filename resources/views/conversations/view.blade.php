@@ -342,7 +342,7 @@
                                     </div>
                                 </div>
 
-                                @if ($conversation->isChat() && !$is_in_chat_mode && $mailbox->isConnected() && optional($conversation->customer)->getMainEmail())
+                                @if ($conversation->isChat() && !$is_in_chat_mode && config('app.chat_conversation_reply_by_email') && $mailbox->isConnected() && optional($conversation->customer)->getMainEmail())
                                     <div class="form-group conv-chat-email">
                                         <label class="control-label"></label>
                                         <div class="conv-reply-field">

@@ -1227,7 +1227,7 @@ class ConversationsController extends Controller
 
                     // Chat conversation: the agent may choose to also send the reply
                     // to the customer by email (if the customer has an email).
-                    if ($conversation->isChat()) {
+                    if ($conversation->isChat() && config('app.chat_conversation_reply_by_email')) {
                         $chat_email = '';
                         if (!$is_note && !$is_forward && !$new
                             && !empty($request->chat_send_email)
