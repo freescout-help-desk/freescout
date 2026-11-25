@@ -700,11 +700,11 @@ class Message {
      * @return $this
      */
     public function setFetchOption($option): Message {
-        if (is_long($option) === true) {
+        if (is_int($option) === true) {
             $this->fetch_options = $option;
         } elseif (is_null($option) === true) {
             $config = ClientManager::get('options.fetch', IMAP::FT_UID);
-            $this->fetch_options = is_long($config) ? $config : 1;
+            $this->fetch_options = is_int($config) ? $config : 1;
         }
 
         return $this;
@@ -717,11 +717,11 @@ class Message {
      * @return $this
      */
     public function setSequence($sequence): Message {
-        if (is_long($sequence)) {
+        if (is_int($sequence)) {
             $this->sequence = $sequence;
         } elseif (is_null($sequence)) {
             $config = ClientManager::get('options.sequence', IMAP::ST_MSGN);
-            $this->sequence = is_long($config) ? $config : IMAP::ST_MSGN;
+            $this->sequence = is_int($config) ? $config : IMAP::ST_MSGN;
         }
 
         return $this;

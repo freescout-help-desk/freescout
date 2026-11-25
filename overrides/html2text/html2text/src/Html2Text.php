@@ -233,7 +233,9 @@ class Html2Text
     {
         // for backwards compatibility
         if (!is_array($options)) {
-            return call_user_func_array(array($this, 'legacyConstruct'), func_get_args());
+            call_user_func_array(array($this, 'legacyConstruct'), func_get_args());
+
+            return;
         }
 
         $this->html = (string)$html;
