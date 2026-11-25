@@ -1008,7 +1008,13 @@ class Mail
                 }
 
                 if (count($messages)) {
-                    return $messages->first();
+                    $found_message = $messages->first();
+                    // Some IMAP servers ignore the HEADER search criteria and return
+                    // an unrelated message, so make sure it is the requested one.
+                    // https://github.com/freescout-help-desk/freescout/issues/5844
+                    if (self::isSameMessageId($found_message, $message_id)) {
+                        return $found_message;
+                    }
                 }
 
             } catch (\Exception $e) {
@@ -1017,6 +1023,25 @@ class Mail
         }
 
         return self::findMessageByHeaders($mailbox, $client, $imap_folders, $message_id, $message_date);
+    }
+
+    /**
+     * Check that the fetched IMAP message has the expected Message-ID.
+     * If the Message-ID of the fetched message can not be determined, the message is accepted.
+     */
+    public static function isSameMessageId($message, $message_id)
+    {
+        try {
+            $found_id = trim((string)$message->getMessageId(), " \t\r\n<>");
+        } catch (\Throwable $e) {
+            return true;
+        }
+
+        if ($found_id === '') {
+            return true;
+        }
+
+        return $found_id === trim((string)$message_id, " \t\r\n<>");
     }
 
     /**
