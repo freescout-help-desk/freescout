@@ -86,14 +86,14 @@
                                 @endif
                             @else
                                 @if (\Helper::isPrint())
-                                    {{ $thread->created_by_user_cached->getFullName() }}
+                                    {{ optional($thread->created_by_user_cached)->getFullName() }}
                                 @else
                                     @include('conversations/thread_by', ['as_link' => true])
                                 @endif
                             @endif
                         </strong>
                         @if (\Helper::isPrint())
-                            <small>&lt;{{ ($thread->type == App\Thread::TYPE_CUSTOMER ? $thread->customer_cached->getMainEmail() : $mailbox->email ) }}&gt;</small>
+                            <small>&lt;{{ ($thread->type == App\Thread::TYPE_CUSTOMER ? optional($thread->customer_cached)->getMainEmail() : $mailbox->email ) }}&gt;</small>
                             @if ($thread->isNote())
                                 [{{ __('Note') }}]
                             @endif
