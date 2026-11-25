@@ -1318,28 +1318,26 @@ class Helper
         }
 
         $old_value = '';
+        $old_offset = 0;
         // Match the given key at the beginning of a line
-        preg_match("/^{$key}=[^\r\n]*/m", $contents, $matches);
+        preg_match("/^{$key}=[^\r\n]*/m", $contents, $matches, PREG_OFFSET_CAPTURE);
         if (count($matches)) {
-            $old_value = (string)substr($matches[0], strlen($key) + 1);
+            $old_value = (string)substr($matches[0][0], strlen($key) + 1);
+            $old_offset = $matches[0][1];
         }
 
         if ($old_value !== '') {
             // Replace.
             // Only at the beginning of a line, otherwise OTHER_{$key}= would be replaced too.
-            // $contents = str_replace("{$key}={$old_value}", "{$key}={$value}", $contents);
-            $contents = preg_replace_callback('/^'.preg_quote("{$key}={$old_value}", '/').'/m', function () use ($key, $value) {
-                return "{$key}={$value}";
-            }, $contents, 1);
+            // The old value is not used in a regular expression as a large value
+            // makes PCRE fail: "regular expression is too large".
+            $contents = substr_replace($contents, "{$key}={$value}", $old_offset, strlen($key) + 1 + strlen($old_value));
         } else {
             // Add or empty value
-            preg_match("/^{$key}=[\r\n]/m", $contents, $matches);
+            preg_match("/^{$key}=[\r\n]/m", $contents, $matches, PREG_OFFSET_CAPTURE);
             if (count($matches)) {
                 // Replace empty value
-                // $contents = str_replace("{$key}=", "{$key}={$value}", $contents);
-                $contents = preg_replace_callback('/^'.preg_quote("{$key}=", '/').'/m', function () use ($key, $value) {
-                    return "{$key}={$value}";
-                }, $contents, 1);
+                $contents = substr_replace($contents, "{$key}={$value}", $matches[0][1], strlen($key) + 1);
             } else {
                 // Add.
                 $contents = $contents."\n{$key}={$value}\n";
