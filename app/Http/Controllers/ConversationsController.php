@@ -3123,7 +3123,14 @@ class ConversationsController extends Controller
         // Modify filters is needed.
         if (!empty($filters['customer'])) {
             // Get customer name.
-            $filters_data['customer'] = Customer::find($filters['customer']);
+            // The customer is shown in the filter only if the user is allowed to view it
+            // (Customer Visibility setting).
+            $filters_customer = Customer::find($filters['customer']);
+            if ($filters_customer && $user->can('view', $filters_customer)) {
+                $filters_data['customer'] = $filters_customer;
+            } else {
+                unset($filters['customer']);
+            }
         }
         //$filters = \Eventy::filter('search.filters', $filters, $filters_data, $mode, $q);
         if ($user->canSeeOnlyAssignedConversations()) {
