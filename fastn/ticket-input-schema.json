@@ -1,0 +1,134 @@
+{
+  "type": "object",
+  "required": [
+    "ticket",
+    "customer"
+  ],
+  "properties": {
+    "source": {
+      "type": "string",
+      "description": "Always 'freescout'."
+    },
+    "event": {
+      "type": "string",
+      "description": "What happened: ticket.created, ticket.status_changed, ticket.replied, ticket.note_added, ticket.assigned, customer.updated."
+    },
+    "ticket": {
+      "type": "object",
+      "description": "The new FreeScout ticket (conversation).",
+      "required": [
+        "id"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "FreeScout conversation id, unique per help desk."
+        },
+        "number": {
+          "type": "string",
+          "description": "Ticket number shown in FreeScout."
+        },
+        "subject": {
+          "type": "string",
+          "description": "Ticket subject."
+        },
+        "status": {
+          "type": "string",
+          "description": "Ticket status name now, e.g. Active, Pending, Closed."
+        },
+        "type": {
+          "type": "string",
+          "description": "Ticket type, e.g. Email."
+        },
+        "mailbox": {
+          "type": "string",
+          "description": "Mailbox the ticket arrived in."
+        },
+        "preview": {
+          "type": "string",
+          "description": "Short preview of the first message."
+        },
+        "body": {
+          "type": "string",
+          "description": "First message as plain text."
+        },
+        "url": {
+          "type": "string",
+          "description": "Link to the ticket in FreeScout."
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "When the ticket was created, ISO 8601."
+        },
+        "assignee": {
+          "type": "string",
+          "description": "Agent the ticket is assigned to."
+        },
+        "updatedAt": {
+          "type": "string",
+          "description": "When the ticket last changed, ISO 8601."
+        }
+      }
+    },
+    "customer": {
+      "type": "object",
+      "description": "The customer who opened the ticket.",
+      "properties": {
+        "email": {
+          "type": "string",
+          "description": "Customer email."
+        },
+        "firstName": {
+          "type": "string",
+          "description": "First name."
+        },
+        "lastName": {
+          "type": "string",
+          "description": "Last name."
+        },
+        "fullName": {
+          "type": "string",
+          "description": "Full name."
+        },
+        "company": {
+          "type": "string",
+          "description": "Company."
+        },
+        "jobTitle": {
+          "type": "string",
+          "description": "Job title."
+        },
+        "phone": {
+          "type": "string",
+          "description": "Phone number."
+        }
+      }
+    },
+    "change": {
+      "type": "object",
+      "description": "Details of the change for update events.",
+      "properties": {
+        "by": {
+          "type": "string",
+          "description": "Who made the change."
+        },
+        "byCustomer": {
+          "type": "boolean",
+          "description": "True when the customer wrote the reply."
+        },
+        "prevStatus": {
+          "type": "string",
+          "description": "Status before the change."
+        },
+        "text": {
+          "type": "string",
+          "description": "Reply or note text, plain."
+        },
+        "assignee": {
+          "type": "string",
+          "description": "New assignee name."
+        }
+      }
+    }
+  }
+}

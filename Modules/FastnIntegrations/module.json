@@ -1,0 +1,30 @@
+{
+    "name": "FastnIntegrations",
+    "alias": "fastnintegrations",
+    "description": "Integrations page powered by fastn: each help desk connects its own Linear, HubSpot, Google Sheets, ClickUp and Asana. New tickets and later changes sync to Linear, HubSpot and Google Sheets, and Linear changes come back to the ticket.",
+    "version": "1.0.0",
+    "detailsUrl": "https://fastn.ai",
+    "author": "fastn",
+    "authorUrl": "https://fastn.ai",
+    "requiredAppVersion": "1.8.0",
+    "license": "AGPL-3.0",
+    "keywords": [
+        "integrations",
+        "fastn",
+        "linear",
+        "hubspot",
+        "google sheets",
+        "clickup",
+        "asana"
+    ],
+    "active": 0,
+    "order": 0,
+    "providers": [
+        "Modules\\FastnIntegrations\\Providers\\FastnIntegrationsServiceProvider"
+    ],
+    "aliases": {},
+    "files": [
+        "start.php"
+    ],
+    "requires": []
+}
