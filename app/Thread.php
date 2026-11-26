@@ -354,6 +354,11 @@ class Thread extends Model
             \Config::set('purifier.settings.default.Core.EscapeNonASCIICharacters', true);
         }
 
+        // Plain text bodies (for example, created via API or by old End-User Portal versions)
+        // have to be converted to HTML, as AutoParagraph is disabled in Purifier config.
+        // https://github.com/freescout-help-desk/freescout/issues/5850
+        $body = self::plainTextToHtml($body);
+
         $body = \Helper::purifyHtml($body);
 
         if ($escape_non_ascii_characters) {
@@ -361,6 +366,44 @@ class Thread extends Model
         }
 
         return $body;
+    }
+
+    /**
+     * Convert a text with line breaks and without HTML tags into paragraphs.
+     * Bodies containing HTML tags are returned as is.
+     */
+    public static function plainTextToHtml($body)
+    {
+        if (!is_string($body) || $body === '') {
+            return $body;
+        }
+
+        // Has no line breaks.
+        if (strpos($body, "\n") === false && strpos($body, "\r") === false) {
+            return $body;
+        }
+
+        // Has HTML tags or comments.
+        if (preg_match('/<\/?[a-z][^>]*>|<!--/i', $body)) {
+            return $body;
+        }
+
+        // Blocks separated by empty lines become paragraphs, single line breaks become <br>.
+        $paragraphs = preg_split('/(?:\R[ \t]*){2,}/', trim($body));
+        if ($paragraphs === false) {
+            return $body;
+        }
+
+        $html = '';
+        foreach ($paragraphs as $paragraph) {
+            $paragraph = trim($paragraph);
+            if ($paragraph === '') {
+                continue;
+            }
+            $html .= '<p>'.nl2br($paragraph).'</p>';
+        }
+
+        return $html !== '' ? $html : $body;
     }
 
     /**
