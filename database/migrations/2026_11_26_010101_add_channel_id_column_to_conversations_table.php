@@ -20,7 +20,7 @@ class AddChannelIdColumnToConversationsTable extends Migration
         Schema::table('conversations', function (Blueprint $table) {
             // To avoid "Row size too large" error.
             $table->text('preview')->change();
-            $table->string('channel_id', 64)->after('channel');
+            $table->string('channel_id', 64)->after('channel')->nullable();
         });
     }
 
