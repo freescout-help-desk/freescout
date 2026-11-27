@@ -426,7 +426,7 @@ class Thread extends Model
         // (or to all links if APP_OPEN_LINKS_IN_NEW_TAB is enabled).
         $pattern = '/<a(.*?)?href=[\'"]?[\'"]?(.*?)?>/i';
 
-        $all_links_new_tab = (bool)config('app.open_links_in_new_tab');
+        $all_links_new_tab = \Helper::openLinksInNewTab();
 
         $body = preg_replace_callback($pattern, function ($m) use ($all_links_new_tab) {
             $tpl = array_shift($m);

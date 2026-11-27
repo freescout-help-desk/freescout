@@ -3565,4 +3565,9 @@ class Helper
             return config('filesystems.default') == 'local';
         }
     }
+
+    public static function openLinksInNewTab()
+    {
+        return (bool)config('app.open_links_in_new_tab');
+    }
 }
