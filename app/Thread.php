@@ -1302,6 +1302,14 @@ class Thread extends Model
 
             if ($is_customer) {
                 $conversation->customer_email = $customer->getMainEmail();
+
+                // Replies have to be sent to the channel ID the customer has written from.
+                if ($conversation->channel) {
+                    $matched_channel_id = $customer->getCachedChannelId($conversation->channel);
+                    if ((string)$matched_channel_id !== '') {
+                        $conversation->channel_id = $matched_channel_id;
+                    }
+                }
             }
 
             if ($update_folder) {

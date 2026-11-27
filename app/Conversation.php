@@ -2662,6 +2662,14 @@ class Conversation extends Model
         $conversation->imported = (int)($data['imported'] ?? false);
         $conversation->closed_at = $data['closed_at'] ?? null;
         $conversation->channel = $data['channel'] ?? null;
+        // Customer's channel ID the conversation is held with.
+        // A customer can have several channel IDs for the same channel.
+        $conversation->channel_id = null;
+        if ($conversation->channel) {
+            $conversation->channel_id = $data['channel_id']
+                ?? $customer->getCachedChannelId($conversation->channel)
+                ?: $customer->getChannelId($conversation->channel);
+        }
         $conversation->preview = '';
 
         // Phone conversation is always pending.

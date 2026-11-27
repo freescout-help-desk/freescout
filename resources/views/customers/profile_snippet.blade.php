@@ -7,7 +7,8 @@
 			<a href="{{ route('customers.update', ['id' => $customer->id]) }}" class="customer-name">{{ $customer->getFullName(true, true) }}</a>
 		@endif
 		@php
-			$channels = $customer->getChannels();
+			// A customer can have several IDs for the same channel.
+			$channels = $customer->getChannels()->unique('channel');
 		@endphp
 		@if (count($channels))
 			<div class="customer-tags">@foreach ($channels as $channel)<span class="fs-tag"><span class="fs-tag-name">{{ $channel->getChannelName() }}</span></span>@endforeach{{ '' }}@action('customer.tags', $customer, $conversation ?? null)</div>
