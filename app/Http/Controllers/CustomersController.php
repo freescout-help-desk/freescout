@@ -246,6 +246,7 @@ class CustomersController extends Controller
         $query = $customer->conversations()
             ->where('customer_id', $customer->id)
             ->whereIn('mailbox_id', auth()->user()->mailboxesIdsCanView())
+            ->where('state', Conversation::STATE_PUBLISHED)
             ->orderBy('created_at', 'desc');
 
         $user = auth()->user();
