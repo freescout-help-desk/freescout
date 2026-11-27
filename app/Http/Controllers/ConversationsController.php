@@ -3115,6 +3115,7 @@ class ConversationsController extends Controller
             'folder'        => $folder,
             'conversations' => $conversations,
             'params'        => $request->params ?? [],
+            'is_ajax'       => true,
         ])->render();
 
         return $response;
@@ -3449,6 +3450,7 @@ class ConversationsController extends Controller
             'conversations' => $conversations,
             'params' => $request->params ?? [],
             'conversations_filter' => $request->filter['f'] ?? $request->filter ?? [],
+            'is_ajax' => true,
         ])->render();
 
         return $response;
