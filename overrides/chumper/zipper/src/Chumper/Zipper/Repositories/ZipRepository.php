@@ -10,6 +10,13 @@ class ZipRepository implements RepositoryInterface
     private $archive;
 
     /**
+     * Whether the archive has already been closed.
+     *
+     * @var bool
+     */
+    private $closed = false;
+
+    /**
      * Construct with a given path
      *
      * @param $filePath
@@ -161,7 +168,17 @@ class ZipRepository implements RepositoryInterface
      */
     public function close()
     {
-        @$this->archive->close();
+        if ($this->closed) {
+            return;
+        }
+        $this->closed = true;
+
+        try {
+            @$this->archive->close();
+        } catch (\Throwable $e) {
+            // The archive has already been closed (by the Zipper, a module or the destructor).
+            // PHP 8 throws ValueError "Invalid or uninitialized Zip object" in this case.
+        }
     }
 
     private function getErrorMessage($resultCode)
