@@ -1265,10 +1265,21 @@ class User extends Authenticatable
         }
     }
 
+    /**
+     * Get the secret used to sign mobile app auth tokens.
+     * The remember token is a part of the key, so the auth tokens
+     * are revoked when the remember token is cycled (user logout,
+     * "Logout all users" tool), in addition to a password change.
+     */
+    public function getAuthTokenKey()
+    {
+        return config('app.key').$this->password.$this->remember_token;
+    }
+
     public function getAuthToken()
     {
         $expiry = time()+2592000;
-        $hash = hash_hmac('sha256', $this->id.':'.$expiry, config('app.key').$this->password);
+        $hash = hash_hmac('sha256', $this->id.':'.$expiry, $this->getAuthTokenKey());
 
         return urlencode(base64_encode($this->id.':'.$expiry.':'.$hash));
     }

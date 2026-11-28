@@ -39,7 +39,7 @@ class TokenAuth
             }
 
             // Verify hash.
-            $hash = hash_hmac('sha256', $user_id.':'.$expiry, config('app.key').$user->password);
+            $hash = hash_hmac('sha256', $user_id.':'.$expiry, $user->getAuthTokenKey());
 
             if (hash_equals($hash, $token_hash)) {
                 \Auth::login($user);
