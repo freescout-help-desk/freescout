@@ -184,6 +184,8 @@ class Customer extends Model
     public static $search_filters = [
         'mailbox',
         'company',
+        'country',
+        'city',
     ];
 
     /**
@@ -456,6 +458,12 @@ class Customer extends Model
      *
      * @var [type]
      */
+    /**
+     * Channel IDs the customer has been matched by in the current process:
+     * [channel => channel_id]. Not stored in DB.
+     */
+    protected $channel_id_cache = [];
+
     protected $fillable = ['first_name', 'last_name', 'company', 'job_title', 'address', 'city', 'state', 'zip', 'country', 'photo_url', 'notes', 'channel', 'channel_id', 'social_profiles'];
 
     /**
@@ -1436,6 +1444,16 @@ class Customer extends Model
         $this->photo_url = '';
     }
 
+    /**
+     * Filter a query by the exact company name.
+     * The comparison ignores the case and the leading/trailing spaces.
+     * The customers table must be present in the query.
+     */
+    public static function applyCompanyExactFilter($query, $company)
+    {
+        return $query->whereRaw('LOWER(TRIM('.\DB::getTablePrefix().'customers.company)) = LOWER(TRIM(?))', [$company]);
+    }
+
     public function getCountryName()
     {
         if ($this->country && !empty(self::$countries[$this->country])) {
@@ -1615,6 +1633,13 @@ class Customer extends Model
         return CustomerChannel::where('customer_id', $this->id)->get();
     }
 
+    /**
+     * Add a channel ID to the customer.
+     * A customer can have several channel IDs for the same channel.
+     * A channel ID (channel + channel_id) can belong to one customer only.
+     *
+     * @return CustomerChannel|null Null if the record already exists.
+     */
     public function addChannel($channel, $channel_id)
     {
         // We are doing this to let existing modules not to throw error
@@ -1624,41 +1649,51 @@ class Customer extends Model
             $this->channel_id = $channel_id;
             $this->save();
         }
+
         $customer_channel = CustomerChannel::where('customer_id', $this->id)
-                ->where('channel', $channel)
-                ->first();
+            ->where('channel', $channel)
+            ->where('channel_id', $channel_id)
+            ->first();
+
+        // Remember the channel ID the customer has been matched by.
+        $this->channel_id_cache[$channel] = $channel_id;
 
         if ($customer_channel) {
-            // Update channel_id.
-            if ($customer_channel->channel_id != $channel_id) {
-                try {
-                    $customer_channel->channel_id = $channel_id;
-                    $customer_channel->save();
-                } catch (\Exception $e) {
-                    // Do nothing.
-                }
-                return $customer_channel;
-            }
-        } else {
-            // Create.
-            return CustomerChannel::create($this->id, $channel, $channel_id);
+            // Already exists.
+            return null;
         }
+
+        // Create (returns null if the channel ID belongs to another customer).
+        return CustomerChannel::create($this->id, $channel, $channel_id);
     }
 
-    // Each customer can have only one record for specific CHANNEL in CustomerChannel table.
-    public function updateChannelId($channel, $new_channel_id)
+    /**
+     * Replace the current (the latest added) channel ID of the customer
+     * for the specified channel. Other channel IDs of the channel are not touched.
+     *
+     * Should not be used anymore - use addChannel() instead.
+     */
+    /*public function updateChannelId($channel, $new_channel_id)
     {
         if (!$channel || !$new_channel_id) {
             return;
         }
         try {
-            CustomerChannel::where('customer_id', $this->id)
+            $customer_channel = CustomerChannel::where('customer_id', $this->id)
                 ->where('channel', $channel)
-                ->update(['channel_id' => $new_channel_id]);
+                ->orderBy('id', 'desc')
+                ->first();
+
+            if ($customer_channel) {
+                $customer_channel->channel_id = $new_channel_id;
+                $customer_channel->save();
+            }
         } catch (\Exception $e) {
+            // We may get here if channel with $new_channel_id
+            // already exists for the customer.
             // Do nothing.
         }
-    }
+    }*/
 
     public static function getCustomerByChannel($channel, $channel_id)
     {
@@ -1667,17 +1702,66 @@ class Customer extends Model
             ->first();
 
         if ($customer_channel) {
-            return $customer_channel->customer;
+            $customer = $customer_channel->customer;
+            if ($customer) {
+                // Remember the channel ID the customer has been found by.
+                $customer->channel_id_cache[$channel] = $channel_id;
+            }
+            return $customer;
         } else {
             return null;
         }
     }
 
-    public function getChannelId($channel)
+    /**
+     * Get the channel ID to communicate with the customer via the channel.
+     *
+     * If the customer has several channel IDs for the channel,
+     * $conversation parameter should be passed.
+     * The channel ID of the conversation is returned
+     * or the latest added channel if the conversation has no (valid) channel ID.
+     */
+    public function getChannelId($channel, $conversation = null)
+    {
+        if ($conversation && $conversation->channel_id) {
+            // Rememer in cache.
+            $this->channel_id_cache[$channel] = $conversation->channel_id;
+
+            return $conversation->channel_id;
+        } else {
+            $channel_id = CustomerChannel::where('customer_id', $this->id)
+                ->where('channel', $channel)
+                ->orderBy('id', 'desc')
+                ->value('channel_id');
+
+            if ((string)$channel_id !== '') {
+                $this->channel_id_cache[$channel] = $channel_id;
+            }
+
+            return $channel_id;
+        }
+    }
+
+    /**
+     * Get the channel ID the customer has been found or added by in the current process.
+     */
+    public function getCachedChannelId($channel)
+    {
+        return $this->channel_id_cache[$channel] ?? null;
+    }
+
+    /**
+     * Get all channel IDs of the customer for the channel (the latest added first).
+     *
+     * @return array
+     */
+    public function getChannelIds($channel)
     {
         return CustomerChannel::where('customer_id', $this->id)
             ->where('channel', $channel)
-            ->value('channel_id');
+            ->orderBy('id', 'desc')
+            ->pluck('channel_id')
+            ->all();
     }
 
     public static function findCustomersBySocialProfile($type, $value, $exclude_channel = null)

@@ -246,6 +246,7 @@ class CustomersController extends Controller
         $query = $customer->conversations()
             ->where('customer_id', $customer->id)
             ->whereIn('mailbox_id', auth()->user()->mailboxesIdsCanView())
+            ->where('state', Conversation::STATE_PUBLISHED)
             ->orderBy('created_at', 'desc');
 
         $user = auth()->user();
@@ -267,6 +268,10 @@ class CustomersController extends Controller
      */
     public function ajaxSearch(Request $request)
     {
+        if ($request->search_by == 'company') {
+            return $this->ajaxSearchCompanies($request);
+        }
+
         $response = [
             'results'    => [],
             'pagination' => ['more' => false],
@@ -388,6 +393,52 @@ class CustomersController extends Controller
         }
 
         $response['pagination']['more'] = $customers->hasMorePages();
+
+        return \Response::json($response);
+    }
+
+    /**
+     * Search for the existing company names (used by the Company field of the customer form).
+     */
+    protected function ajaxSearchCompanies(Request $request)
+    {
+        $response = [
+            'results'    => [],
+            'pagination' => ['more' => false],
+        ];
+
+        $q = is_string($request->q) ? trim($request->q) : '';
+
+        $user = auth()->user();
+        $limited_visibility = config('app.limit_user_customer_visibility') && !$user->isAdmin();
+
+        $companies_query = Customer::select('customers.company')
+            ->whereNotNull('customers.company')
+            ->where('customers.company', '<>', '');
+
+        if ($q !== '') {
+            $companies_query->where('customers.company', \Helper::isPgSql() ? 'ilike' : 'like', '%'.$q.'%');
+        }
+
+        if ($limited_visibility) {
+            // Do not reveal companies of the customers the user can not see.
+            $companies_query->join('conversations', 'conversations.customer_id', '=', 'customers.id');
+            $companies_query->whereIn('conversations.mailbox_id', $user->mailboxesIdsCanView());
+        }
+
+        $companies = $companies_query
+            ->groupBy('customers.company')
+            ->orderBy('customers.company')
+            ->paginate(20);
+
+        foreach ($companies as $customer) {
+            $response['results'][] = [
+                'id'   => $customer->company,
+                'text' => $customer->company,
+            ];
+        }
+
+        $response['pagination']['more'] = $companies->hasMorePages();
 
         return \Response::json($response);
     }

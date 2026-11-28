@@ -1318,21 +1318,26 @@ class Helper
         }
 
         $old_value = '';
+        $old_offset = 0;
         // Match the given key at the beginning of a line
-        preg_match("/^{$key}=[^\r\n]*/m", $contents, $matches);
+        preg_match("/^{$key}=[^\r\n]*/m", $contents, $matches, PREG_OFFSET_CAPTURE);
         if (count($matches)) {
-            $old_value = substr($matches[0], strlen($key) + 1);
+            $old_value = (string)substr($matches[0][0], strlen($key) + 1);
+            $old_offset = $matches[0][1];
         }
 
-        if ($old_value) {
+        if ($old_value !== '') {
             // Replace.
-            $contents = str_replace("{$key}={$old_value}", "{$key}={$value}", $contents);
+            // Only at the beginning of a line, otherwise OTHER_{$key}= would be replaced too.
+            // The old value is not used in a regular expression as a large value
+            // makes PCRE fail: "regular expression is too large".
+            $contents = substr_replace($contents, "{$key}={$value}", $old_offset, strlen($key) + 1 + strlen($old_value));
         } else {
             // Add or empty value
-            preg_match("/^{$key}=[\r\n]/m", $contents, $matches);
+            preg_match("/^{$key}=[\r\n]/m", $contents, $matches, PREG_OFFSET_CAPTURE);
             if (count($matches)) {
                 // Replace empty value
-                $contents = str_replace("{$key}=", "{$key}={$value}", $contents);
+                $contents = substr_replace($contents, "{$key}={$value}", $matches[0][1], strlen($key) + 1);
             } else {
                 // Add.
                 $contents = $contents."\n{$key}={$value}\n";
@@ -1951,7 +1956,9 @@ class Helper
         $pids = [];
 
         try {
-            $processes = preg_split("/[\r\n]/", \Helper::shellExec("ps aux | grep '".$search."'"));
+            // Avoid memory statistics, which are unavailable with systemd ProcSubset=pid.
+            // Fall back for ps implementations without support for these options.
+            $processes = preg_split("/[\r\n]/", \Helper::shellExec("(ps -eww -o user,pid,args 2>/dev/null || ps aux) | grep '".$search."'"));
             foreach ($processes as $process) {
                 $process = trim($process);
                 preg_match("/^[\S]+\s+([\d]+)\s+/", $process, $m);
@@ -3557,5 +3564,10 @@ class Helper
         } else {
             return config('filesystems.default') == 'local';
         }
+    }
+
+    public static function openLinksInNewTab()
+    {
+        return (bool)config('app.open_links_in_new_tab');
     }
 }

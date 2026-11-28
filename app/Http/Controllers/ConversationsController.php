@@ -908,6 +908,18 @@ class ConversationsController extends Controller
                     // Delete removed attachments.
                     $attachments_info = $this->processReplyAttachments($request, $thread->id ?? null);
 
+                    // Forwarding and multi-recipient branches copy or re-bind attachments
+                    // by client-supplied ids, so accept only the attachments uploaded
+                    // by the current user or belonging to the draft being sent.
+                    $forward_attachments_ids = [];
+                    if ($is_forward || $is_multiple) {
+                        $forward_attachments_ids = $this->filterForwardAttachmentsIds(
+                            $attachments_info['attachments'],
+                            $user->id,
+                            $thread->id ?? null
+                        );
+                    }
+
                     // Determine redirect.
                     // Must be done before updating current conversation's status or assignee.
                     // Redirect URL for new no saved yet conversation is determined below.
@@ -1227,7 +1239,7 @@ class ConversationsController extends Controller
 
                     // Chat conversation: the agent may choose to also send the reply
                     // to the customer by email (if the customer has an email).
-                    if ($conversation->isChat()) {
+                    if ($conversation->isChat() && config('app.chat_conversation_reply_by_email')) {
                         $chat_email = '';
                         if (!$is_note && !$is_forward && !$new
                             && !empty($request->chat_send_email)
@@ -1304,11 +1316,11 @@ class ConversationsController extends Controller
                         if ($is_forward) {
                             // Copy attachments for each thread.
                             if (count($forwarded_threads) > 1) {
-                                $attachments = Attachment::whereIn('id', $attachments_info['attachments'])->get();
+                                $attachments = Attachment::whereIn('id', $forward_attachments_ids)->get();
                             }
                             foreach ($forwarded_threads as $i => $forwarded_thread) {
                                 if ($i == 0) {
-                                    Attachment::whereIn('id', $attachments_info['attachments'])->update(['thread_id' => $forwarded_thread->id]);
+                                    Attachment::whereIn('id', $forward_attachments_ids)->update(['thread_id' => $forwarded_thread->id]);
                                 } else {
                                     foreach ($attachments as $attachment) {
                                         $attachment->duplicate($forwarded_thread->id);
@@ -1412,8 +1424,8 @@ class ConversationsController extends Controller
                             $thread_copy->push();
 
                             // Copy attachments.
-                            if (!empty($attachments_info['attachments'])) {
-                                $attachments = Attachment::whereIn('id', $attachments_info['attachments'])->get();
+                            if (!empty($forward_attachments_ids)) {
+                                $attachments = Attachment::whereIn('id', $forward_attachments_ids)->get();
                                 foreach ($attachments as $attachment) {
                                     $attachment->duplicate($thread_copy->id);
                                 }
@@ -1902,6 +1914,11 @@ class ConversationsController extends Controller
                                 foreach ($thread->attachments as $attachment) {
                                     if ($request->is_forwarding == 'true') {
                                         $attachment_copy = $attachment->duplicate();
+                                        if ($attachment_copy) {
+                                            // The copy is a fresh upload of the current user.
+                                            $attachment_copy->user_id = $user->id;
+                                            $attachment_copy->save();
+                                        }
                                     } else {
                                         $attachment_copy = $attachment;
                                     }
@@ -3098,6 +3115,7 @@ class ConversationsController extends Controller
             'folder'        => $folder,
             'conversations' => $conversations,
             'params'        => $request->params ?? [],
+            'is_ajax'       => true,
         ])->render();
 
         return $response;
@@ -3123,7 +3141,14 @@ class ConversationsController extends Controller
         // Modify filters is needed.
         if (!empty($filters['customer'])) {
             // Get customer name.
-            $filters_data['customer'] = Customer::find($filters['customer']);
+            // The customer is shown in the filter only if the user is allowed to view it
+            // (Customer Visibility setting).
+            $filters_customer = Customer::find($filters['customer']);
+            if ($filters_customer && $user->can('view', $filters_customer)) {
+                $filters_data['customer'] = $filters_customer;
+            } else {
+                unset($filters['customer']);
+            }
         }
         //$filters = \Eventy::filter('search.filters', $filters, $filters_data, $mode, $q);
         if ($user->canSeeOnlyAssignedConversations()) {
@@ -3289,6 +3314,14 @@ class ConversationsController extends Controller
                         unset($filters[$filter]);
                     }
                     break;
+                case 'company':
+                case 'company_exact':
+                case 'country':
+                case 'city':
+                    if (!is_string($value)) {
+                        unset($filters[$filter]);
+                    }
+                    break;
             }
         }
 
@@ -3367,6 +3400,19 @@ class ConversationsController extends Controller
             $query_customers->where('customers.company', \Helper::isPgSql() ? 'ilike' : 'like', $company_like);
         }
 
+        if (!empty($filters['company_exact']) && is_string($filters['company_exact'])) {
+            Customer::applyCompanyExactFilter($query_customers, $filters['company_exact']);
+        }
+
+        if (!empty($filters['country']) && is_string($filters['country'])) {
+            $query_customers->where('customers.country', '=', strtoupper(trim($filters['country'])));
+        }
+
+        if (!empty($filters['city']) && is_string($filters['city'])) {
+            $city_like = '%'.mb_strtolower(trim($filters['city'])).'%';
+            $query_customers->where('customers.city', \Helper::isPgSql() ? 'ilike' : 'like', $city_like);
+        }
+
         $query_customers = \Eventy::filter('search.customers.apply_filters', $query_customers, $filters, $q);
 
         return $query_customers->paginate(50);
@@ -3404,6 +3450,7 @@ class ConversationsController extends Controller
             'conversations' => $conversations,
             'params' => $request->params ?? [],
             'conversations_filter' => $request->filter['f'] ?? $request->filter ?? [],
+            'is_ajax' => true,
         ])->render();
 
         return $response;
@@ -3480,6 +3527,36 @@ class ConversationsController extends Controller
             'has_attachments' => $has_attachments,
             'attachments'     => $attachments,
         ];
+    }
+
+    /**
+     * Leave only the attachments which can be safely copied or bound to a new thread
+     * when forwarding or sending to multiple recipients: fresh uploads of the user
+     * and attachments of the draft thread being sent.
+     */
+    protected function filterForwardAttachmentsIds($attachments_ids, $user_id, $thread_id = null)
+    {
+        if (empty($attachments_ids)) {
+            return [];
+        }
+
+        $allowed_ids = [];
+
+        $attachments = Attachment::select('id', 'thread_id', 'user_id')
+            ->whereIn('id', $attachments_ids)
+            ->get();
+
+        foreach ($attachments as $attachment) {
+            if ($attachment->thread_id) {
+                if ($thread_id && (int)$attachment->thread_id == (int)$thread_id) {
+                    $allowed_ids[] = $attachment->id;
+                }
+            } elseif ($attachment->user_id && (int)$attachment->user_id == (int)$user_id) {
+                $allowed_ids[] = $attachment->id;
+            }
+        }
+
+        return $allowed_ids;
     }
 
     public function decodeAttachmentsIds($attachments_list)

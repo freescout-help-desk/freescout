@@ -116,4 +116,46 @@ class FileSessionHandler implements SessionHandlerInterface
 
         return false;
     }
+
+    /**
+     * Create a new session ID.
+     * Required by PHP 8.6+ for classes implementing SessionHandlerInterface (will be mandatory in PHP 9.0).
+     *
+     * @return string
+     */
+    public function create_sid(): string
+    {
+        return \Illuminate\Support\Str::random(40);
+    }
+
+    /**
+     * Validate a session ID.
+     * Required by PHP 8.6+ for classes implementing SessionHandlerInterface (will be mandatory in PHP 9.0).
+     *
+     * @param  string  $sessionId
+     * @return bool
+     */
+    public function validateId($sessionId): bool
+    {
+        return $this->files->exists($this->path.'/'.$sessionId);
+    }
+
+    /**
+     * Update the session timestamp.
+     * Required by PHP 8.6+ for classes implementing SessionHandlerInterface (will be mandatory in PHP 9.0).
+     *
+     * @param  string  $sessionId
+     * @param  string  $data
+     * @return bool
+     */
+    public function updateTimestamp($sessionId, $data): bool
+    {
+        $path = $this->path.'/'.$sessionId;
+
+        if ($this->files->exists($path)) {
+            @touch($path);
+        }
+
+        return true;
+    }
 }

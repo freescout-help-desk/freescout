@@ -395,6 +395,9 @@ $(document).ready(function(){
 	// Time zone select with search and offset badges
 	initTimezoneSelect();
 
+	// Company select with the search among existing companies
+	initCompanySelect();
+
 	// Editor
 	(function($) {
 		if (typeof($.summernote) != "undefined") {
@@ -459,6 +462,50 @@ $(document).ready(function(){
 		e.preventDefault();
 	});
 }*/
+
+// Company select of the customer form: search among the existing companies or enter a new one.
+function initCompanySelect()
+{
+	var $select = $('select#company:not(.select2-hidden-accessible)');
+
+	if (!$select.length || typeof($.fn.select2) == 'undefined') {
+		return;
+	}
+
+	$select.select2({
+		placeholder: $select.attr('data-placeholder'),
+		allowClear: true,
+		tags: true,
+		// Do not load the list of companies when the dropdown is opened.
+		minimumInputLength: 1,
+		ajax: {
+			url: laroute.route('customers.ajax_search'),
+			dataType: 'json',
+			delay: 250,
+			cache: true,
+			data: function (params) {
+				return {
+					q: params.term,
+					search_by: 'company',
+					page: params.page
+				};
+			}
+		},
+		createTag: function (params) {
+			var term = $.trim(params.term);
+
+			// Company name is limited to 255 characters.
+			if (term === '' || term.length > 255) {
+				return null;
+			}
+			return {
+				id: term,
+				text: term,
+				newOption: true
+			};
+		}
+	});
+}
 
 // Searchable time zone select: zone name on the left, current UTC offset badge on the right.
 function initTimezoneSelect()
@@ -6534,6 +6581,54 @@ function copyToClipboard(text) {
     $temp.val(text).select();
     document.execCommand("copy");
     $temp.remove();
+}
+
+// Dashboard: open the mailbox settings menu downwards by default and flip it
+// upwards only when it does not fit below (mailboxes in the last row).
+// #app has overflow: hidden, so a menu extending below the page is cut off
+// and can't be scrolled to. In the mailbox and conversation views the menu is
+// not affected, as it is not initialized there.
+function initDashboard()
+{
+	var selector = '.dash-card-footer .dropdown';
+
+	$(document).on('shown.bs.dropdown', selector, function() {
+		var dropdown = $(this);
+		var menu = dropdown.children('.dropdown-menu:first')[0];
+		var app = document.getElementById('app');
+
+		if (!menu || !app) {
+			return;
+		}
+
+		// Always start from the downward position, as the menu may have been flipped before.
+		dropdown.removeClass('dropup');
+
+		var page_bottom = app.getBoundingClientRect().bottom;
+		var down = menu.getBoundingClientRect();
+
+		// Fits below.
+		if (down.bottom <= page_bottom) {
+			return;
+		}
+
+		// Bootstrap triggers this event right after showing the menu,
+		// so the menu is flipped before it is painted.
+		dropdown.addClass('dropup');
+
+		// Keep the menu upwards unless it goes above the top of the page
+		// (the navbar is static, so the page top is not reachable by scrolling)
+		// and cutting off below is smaller than cutting off above.
+		var up = menu.getBoundingClientRect();
+		var cut_above = -(up.top - app.getBoundingClientRect().top);
+		var cut_below = down.bottom - page_bottom;
+
+		if (cut_above > 0 && cut_above > cut_below) {
+			dropdown.removeClass('dropup');
+		}
+	}).on('hidden.bs.dropdown', selector, function() {
+		$(this).removeClass('dropup');
+	});
 }
 
 function adjustCustomerSidebarHeight()

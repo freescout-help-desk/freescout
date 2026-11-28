@@ -2064,6 +2064,17 @@ class FetchEmails extends Command
             // Check all separators and choose the shortest reply
             $reply_bodies = [];
 
+            // When a customer replies in Gmail inline (writes answers between
+            // the quoted paragraphs) the new text is located inside
+            // <div class="gmail_quote"> among the quoted blocks, and all separators
+            // (Gmail's one, fsReplyAbove, hashed separator, etc.) are found inside
+            // the quote too, so any of them would cut off the customer's answers.
+            // In such case the body is left as is.
+            // https://github.com/freescout-help-desk/freescout/issues/5825
+            if ($is_html && !$user_reply_to_notification && $this->hasGmailInlineReply($result)) {
+                return $result;
+            }
+
             $reply_separators = Mail::$alternative_reply_separators;
 
             if (!empty($this->mailbox->before_reply)) {
@@ -2123,6 +2134,71 @@ class FetchEmails extends Command
         }
 
         return $result;
+    }
+
+    /**
+     * Detect Gmail inline reply: new text written between the quoted paragraphs,
+     * i.e. there is some content in <div class="gmail_quote"> after
+     * the first <blockquote> (in a regular reply there is nothing but the quote).
+     * https://github.com/freescout-help-desk/freescout/issues/5825
+     *
+     * @param string $html
+     *
+     * @return bool
+     */
+    public function hasGmailInlineReply($html)
+    {
+        if (!is_string($html) || stripos($html, 'gmail_quote') === false) {
+            return false;
+        }
+
+        $has_class = function ($node, $class) {
+            return $node->nodeType == XML_ELEMENT_NODE
+                && in_array($class, preg_split('/\s+/', trim($node->getAttribute('class'))));
+        };
+
+        $has_content = function ($node) {
+            if (preg_replace('/[\s\x{00A0}\x{200B}]+/u', '', $node->textContent)) {
+                return true;
+            }
+            if ($node->nodeType == XML_ELEMENT_NODE) {
+                if (in_array(strtolower($node->nodeName), ['img', 'table'])) {
+                    return true;
+                }
+                return $node->getElementsByTagName('img')->length > 0;
+            }
+            return false;
+        };
+
+        $dom = new \DOMDocument();
+        libxml_use_internal_errors(true);
+        $dom->loadHTML(\Symfony\Polyfill\Mbstring\Mbstring::mb_convert_encoding($html, 'HTML-ENTITIES', 'UTF-8') ?: $html, LIBXML_PARSEHUGE);
+        libxml_clear_errors();
+        libxml_use_internal_errors(false);
+
+        foreach ($dom->getElementsByTagName('div') as $div) {
+            if (!$has_class($div, 'gmail_quote')) {
+                continue;
+            }
+            $quote_found = false;
+            foreach ($div->childNodes as $child) {
+                if ($child->nodeType == XML_ELEMENT_NODE && strtolower($child->nodeName) == 'blockquote') {
+                    $quote_found = true;
+                    continue;
+                }
+                if (!$quote_found
+                    || ($child->nodeType != XML_ELEMENT_NODE && $child->nodeType != XML_TEXT_NODE)
+                    || ($child->nodeType == XML_ELEMENT_NODE && (strtolower($child->nodeName) == 'br' || $has_class($child, 'gmail_attr')))
+                ) {
+                    continue;
+                }
+                if ($has_content($child)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 
     public function replaceCidsWithAttachmentUrls($body, $attachments, $conversation, $prev_has_attachments)

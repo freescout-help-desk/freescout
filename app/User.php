@@ -1074,7 +1074,10 @@ class User extends Authenticatable
      */
     public static function getSuperAdmin()
     {
-        return self::nonDeleted()->where('role', self::ROLE_ADMIN)->first();
+        return self::nonDeleted()
+            ->where('role', self::ROLE_ADMIN)
+            ->orderBy('id')
+            ->first();
     }
 
     /**

@@ -303,6 +303,12 @@ class Header {
         // Consider rfc822 option to be always 'true'.
         if (extension_loaded('imap') /*&& isset($this->config) && $this->config["rfc822"]*/) {
             $raw_imap_headers = (array)\imap_rfc822_parse_headers($raw_headers);
+            // c-client queues warnings (for example "Missing address after comma" for
+            // an address header with a trailing comma) even when the header is parsed
+            // correctly. If not cleared, PHP reports them as a notice on request shutdown.
+            // https://github.com/freescout-help-desk/freescout/issues/5841
+            \imap_errors();
+            \imap_alerts();
             foreach ($raw_imap_headers as $key => $values) {
                 $key = str_replace("-", "_", $key);
                 $values = self::sanitizeHeaderValue($values);

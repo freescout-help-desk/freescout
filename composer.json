@@ -362,6 +362,7 @@
             "vendor/symfony/var-dumper/Cloner/Data.php",
             "vendor/symfony/var-dumper/Cloner/Stub.php",
             "vendor/symfony/var-dumper/Cloner/AbstractCloner.php",
+            "vendor/symfony/var-dumper/Cloner/VarCloner.php",
             "vendor/symfony/var-dumper/Dumper/HtmlDumper.php",
             "vendor/devfactory/minify/src/Providers/BaseProvider.php",
             "vendor/barryvdh/laravel-debugbar/src/DataFormatter/QueryFormatter.php",

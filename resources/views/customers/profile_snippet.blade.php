@@ -7,7 +7,8 @@
 			<a href="{{ route('customers.update', ['id' => $customer->id]) }}" class="customer-name">{{ $customer->getFullName(true, true) }}</a>
 		@endif
 		@php
-			$channels = $customer->getChannels();
+			// A customer can have several IDs for the same channel.
+			$channels = $customer->getChannels()->unique('channel');
 		@endphp
 		@if (count($channels))
 			<div class="customer-tags">@foreach ($channels as $channel)<span class="fs-tag"><span class="fs-tag-name">{{ $channel->getChannelName() }}</span></span>@endforeach{{ '' }}@action('customer.tags', $customer, $conversation ?? null)</div>
@@ -50,7 +51,7 @@
 			@endphp
 			@if ($customer->company || $customer->job_title || $location || $customer->address || $customer->zip)
 				<div class="customer-section">
-					@if ($customer->company)<div>{{ $customer->company }}</div>@endif
+					@if ($customer->company)<div><a href="{{ route('conversations.search', ['f' => ['company_exact' => $customer->company, 'state' => [\App\Conversation::STATE_PUBLISHED]]]) }}" title="{{ __('Company') }}" data-toggle="tooltip">{{ $customer->company }}</a></div>@endif
 					@if ($customer->job_title)<div>{{ $customer->job_title }}</div>@endif
 					@if ($location)<div>{{ implode(', ', $location) }}</div>@endif
 					@if ($customer->address || $customer->zip)<div>{{ $customer->address }}@if ($customer->address && $customer->zip), @endif{{ $customer->zip }}</div>@endif

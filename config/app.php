@@ -18,7 +18,7 @@ return [
     | or any other location as required by the application or its packages.
     */
 
-    'version' => '1.8.252',
+    'version' => '1.8.253',
 
     /*
     |--------------------------------------------------------------------------
@@ -442,6 +442,13 @@ return [
     |-------------------------------------------------------------------------
     */
     'priority_default'  => env('APP_PRIORITY_DEFAULT', 2),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Show "Also send reply to customer by email" when replying to chat conversations.
+    |-------------------------------------------------------------------------
+    */
+    'chat_conversation_reply_by_email'  => env('APP_CHAT_CONVERSATION_REPLY_BY_EMAIL', true),
 
     /*
     |--------------------------------------------------------------------------

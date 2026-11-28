@@ -2662,6 +2662,14 @@ class Conversation extends Model
         $conversation->imported = (int)($data['imported'] ?? false);
         $conversation->closed_at = $data['closed_at'] ?? null;
         $conversation->channel = $data['channel'] ?? null;
+        // Customer's channel ID the conversation is held with.
+        // A customer can have several channel IDs for the same channel.
+        $conversation->channel_id = null;
+        if ($conversation->channel) {
+            $conversation->channel_id = $data['channel_id']
+                ?? $customer->getCachedChannelId($conversation->channel)
+                ?: $customer->getChannelId($conversation->channel);
+        }
         $conversation->preview = '';
 
         // Phone conversation is always pending.
@@ -2881,6 +2889,14 @@ class Conversation extends Model
             $query_conversations->where(function ($query) use ($customer_id) {
                 $query->where('conversations.customer_id', '=', $customer_id)
                     ->orWhere('threads.created_by_customer_id', '=', $customer_id);
+            });
+        }
+        if (!empty($filters['company_exact']) && is_string($filters['company_exact'])) {
+            // Subquery does not depend on the customers table being joined to the query.
+            $company_exact = $filters['company_exact'];
+            $query_conversations->whereIn('conversations.customer_id', function ($query) use ($company_exact) {
+                $query->select('customers.id')->from('customers');
+                Customer::applyCompanyExactFilter($query, $company_exact);
             });
         }
         if (!empty($filters['status']) && is_array($filters['status'])) {

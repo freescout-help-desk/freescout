@@ -86,6 +86,7 @@ There are no minimum system requirements (CPU / RAM) – FreeScout will run on a
 
 ## Images & One-Click Installs
 
+* [Ubuntu](https://github.com/freescout-help-desk/freescout/wiki/Installation-Guide#interactive-installation-bash-script-ubuntu) — Bash script
 * [Docker Image](https://freescout.net/docker/)
 * [Pikapods](https://freescout.net/pikapods/) — Open-source apps hosting (Fully managed)
 * [Zenith](https://freescout.net/zenith/) — Open-source apps hosting (Fully managed)
@@ -93,7 +94,7 @@ There are no minimum system requirements (CPU / RAM) – FreeScout will run on a
 * [Softaculous](http://www.softaculous.com/apps/customersupport/FreeScout) — cPanel, Plesk, ISPmanager, H-Sphere, DirectAdmin, InterWorx
 * [Fantastico](http://ff3.netenberg.com/visitors/scripts/freescout/view) — cPanel, DirectAdmin, ISP Manager, ISP Config
 * [Cloudron](https://cloudron.io/store/net.freescout.cloudronapp.html)
-* [Ubuntu](https://github.com/freescout-help-desk/freescout/wiki/Installation-Guide#interactive-installation-bash-script-ubuntu) — Bash script
+* [Microsoft Image](http://freescout.net/microsoft-image/)
 
 [More one-click installs…](https://freescout.net/one-click-installs/)
 
