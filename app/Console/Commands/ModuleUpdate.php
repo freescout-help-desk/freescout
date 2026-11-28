@@ -51,7 +51,7 @@ class ModuleUpdate extends Command
         
         $modules_directory = \WpApi::getModules();
         if (\WpApi::$lastError) {
-            $this->error(__('Error occurred').': '.$lastError['message'].' ('.$lastError['code'].')');
+            $this->error(__('Error occurred').': '.\WpApi::$lastError['message'].' ('.\WpApi::$lastError['code'].')');
             return;
         }
 
@@ -102,6 +102,13 @@ class ModuleUpdate extends Command
             if (\App\Module::isOfficial($module->get('authorUrl'))) {
                 continue;
             }
+
+            // Update single module.
+            if ($module_alias && $module->getAlias() != $module_alias) {
+                continue;
+            }
+
+            $found = true;
 
             // Get the URL for the latest version of the module
             $latest_version_number_url = $module->get('latestVersionUrl');
