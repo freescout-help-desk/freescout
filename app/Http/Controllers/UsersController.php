@@ -651,6 +651,12 @@ class UsersController extends Controller
         $user->setRememberToken(\Illuminate\Support\Str::random(60));
         $user->save();
 
+        // Revoke outstanding password reset tokens: a reset link requested
+        // before the password change must not stay usable after it.
+        \DB::table(config('auth.passwords.users.table', 'password_resets'))
+            ->where('email', $user->email)
+            ->delete();
+
         // Other sessions of this user are logged out by the AuthenticateSession
         // middleware as their stored password hash no longer matches.
         // Keep the current session alive.
