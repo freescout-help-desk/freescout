@@ -1,6 +1,15 @@
 <div class="module-card col-sm-10 col-md-8 @if (!empty($module['active'])) active @elseif (empty($module['installed'])) not-installed @endif" id="module-{{ $module['alias'] }}" data-alias="{{ $module['alias'] }}">
 	@if (!empty($module['img']))
-		<img src="{{ $module['img'] }}" />
+		@php
+			// Root-relative paths have to include the installation's base path
+			// when FreeScout is installed in a subdirectory.
+			// Leave absolute URLs (and data: URIs) untouched.
+			$module_img = $module['img'];
+			if (substr($module_img, 0, 1) === '/' && substr($module_img, 0, 2) !== '//') {
+				$module_img = asset($module_img);
+			}
+		@endphp
+		<img src="{{ $module_img }}" />
 	@else
 		<img src="{{ asset(App\Module::IMG_DEFAULT) }}" />
 	@endif
