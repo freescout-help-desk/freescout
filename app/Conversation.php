@@ -189,6 +189,7 @@ class Conversation extends Model
         'id',
         'after',
         'before',
+        'company',
         //'between',
         //'on',
     ];
@@ -2891,12 +2892,12 @@ class Conversation extends Model
                     ->orWhere('threads.created_by_customer_id', '=', $customer_id);
             });
         }
-        if (!empty($filters['company_exact']) && is_string($filters['company_exact'])) {
+        if (!empty($filters['company']) && is_string($filters['company'])) {
             // Subquery does not depend on the customers table being joined to the query.
-            $company_exact = $filters['company_exact'];
-            $query_conversations->whereIn('conversations.customer_id', function ($query) use ($company_exact) {
+            $company = $filters['company'];
+            $query_conversations->whereIn('conversations.customer_id', function ($query) use ($company) {
                 $query->select('customers.id')->from('customers');
-                Customer::applyCompanyExactFilter($query, $company_exact);
+                Customer::applyCompanyExactFilter($query, $company);
             });
         }
         if (!empty($filters['status']) && is_array($filters['status'])) {

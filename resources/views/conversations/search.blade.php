@@ -74,13 +74,13 @@
                         @endforeach
                     </select>
 		        </div>
+				{{--<div class="col-sm-6 form-group @if (isset($filters['company'])) active @endif" data-filter="company">
+		            <label>{{ __('Company') }} <b class="remove" data-toggle="tooltip" title="{{ __('Remove filter') }}">×</b></label>
+		            <input type="text" name="f[company]" value="{{ $filters['company'] ?? ''}}" class="form-control" @if (empty($filters['company'])) disabled @endif>
+		        </div>--}}
 				<div class="col-sm-6 form-group @if (isset($filters['company'])) active @endif" data-filter="company">
 		            <label>{{ __('Company') }} <b class="remove" data-toggle="tooltip" title="{{ __('Remove filter') }}">×</b></label>
 		            <input type="text" name="f[company]" value="{{ $filters['company'] ?? ''}}" class="form-control" @if (empty($filters['company'])) disabled @endif>
-		        </div>
-				<div class="col-sm-6 form-group @if (isset($filters['company_exact'])) active @endif" data-filter="company_exact">
-		            <label>{{ __('Company (exact)') }} <b class="remove" data-toggle="tooltip" title="{{ __('Remove filter') }}">×</b></label>
-		            <input type="text" name="f[company_exact]" value="{{ $filters['company_exact'] ?? ''}}" class="form-control" @if (empty($filters['company_exact'])) disabled @endif>
 		        </div>
 				<div class="col-sm-6 form-group @if (isset($filters['country'])) active @endif" data-filter="country">
 		            <label>{{ __('Country') }} <b class="remove" data-toggle="tooltip" title="{{ __('Remove filter') }}">×</b></label>

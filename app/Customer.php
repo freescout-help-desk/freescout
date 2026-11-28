@@ -1451,7 +1451,11 @@ class Customer extends Model
      */
     public static function applyCompanyExactFilter($query, $company)
     {
-        return $query->whereRaw('LOWER(TRIM('.\DB::getTablePrefix().'customers.company)) = LOWER(TRIM(?))', [$company]);
+        $company = trim($company ?? '');
+        if (!$company) {
+            return $query;
+        }
+        return $query->whereRaw('LOWER(TRIM('.\DB::getTablePrefix().'customers.company)) = LOWER(?)', [$company]);
     }
 
     public function getCountryName()

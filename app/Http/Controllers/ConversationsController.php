@@ -3315,7 +3315,6 @@ class ConversationsController extends Controller
                     }
                     break;
                 case 'company':
-                case 'company_exact':
                 case 'country':
                 case 'city':
                     if (!is_string($value)) {
@@ -3395,13 +3394,13 @@ class ConversationsController extends Controller
             $query_customers->whereIn('conversations.mailbox_id', $mailbox_ids);
         }
 
-        if (!empty($filters['company']) && is_string($filters['company'])) {
-            $company_like = '%'.mb_strtolower(trim($filters['company'])).'%';
-            $query_customers->where('customers.company', \Helper::isPgSql() ? 'ilike' : 'like', $company_like);
-        }
+        // if (!empty($filters['company']) && is_string($filters['company'])) {
+        //     $company_like = '%'.mb_strtolower(trim($filters['company'])).'%';
+        //     $query_customers->where('customers.company', \Helper::isPgSql() ? 'ilike' : 'like', $company_like);
+        // }
 
-        if (!empty($filters['company_exact']) && is_string($filters['company_exact'])) {
-            Customer::applyCompanyExactFilter($query_customers, $filters['company_exact']);
+        if (!empty($filters['company']) && is_string($filters['company'])) {
+            Customer::applyCompanyExactFilter($query_customers, $filters['company']);
         }
 
         if (!empty($filters['country']) && is_string($filters['country'])) {

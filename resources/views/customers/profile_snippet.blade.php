@@ -51,7 +51,7 @@
 			@endphp
 			@if ($customer->company || $customer->job_title || $location || $customer->address || $customer->zip)
 				<div class="customer-section">
-					@if ($customer->company)<div><a href="{{ route('conversations.search', ['f' => ['company_exact' => $customer->company, 'state' => [\App\Conversation::STATE_PUBLISHED]]]) }}" title="{{ __('Company') }}" data-toggle="tooltip">{{ $customer->company }}</a></div>@endif
+					@if ($customer->company)<div><a href="{{ route('conversations.search', ['f' => ['company' => $customer->company, 'state' => [\App\Conversation::STATE_PUBLISHED]]]) }}" title="{{ __('Company') }}" data-toggle="tooltip">{{ $customer->company }}</a></div>@endif
 					@if ($customer->job_title)<div>{{ $customer->job_title }}</div>@endif
 					@if ($location)<div>{{ implode(', ', $location) }}</div>@endif
 					@if ($customer->address || $customer->zip)<div>{{ $customer->address }}@if ($customer->address && $customer->zip), @endif{{ $customer->zip }}</div>@endif
