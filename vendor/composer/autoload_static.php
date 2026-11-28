@@ -4221,7 +4221,7 @@ class ComposerStaticInitbf8dc242a640d7c740f283f226d0bdb4
         'Symfony\\Component\\VarDumper\\Cloner\\Data' => __DIR__ . '/../..' . '/overrides/symfony/var-dumper/Cloner/Data.php',
         'Symfony\\Component\\VarDumper\\Cloner\\DumperInterface' => __DIR__ . '/..' . '/symfony/var-dumper/Cloner/DumperInterface.php',
         'Symfony\\Component\\VarDumper\\Cloner\\Stub' => __DIR__ . '/../..' . '/overrides/symfony/var-dumper/Cloner/Stub.php',
-        'Symfony\\Component\\VarDumper\\Cloner\\VarCloner' => __DIR__ . '/..' . '/symfony/var-dumper/Cloner/VarCloner.php',
+        'Symfony\\Component\\VarDumper\\Cloner\\VarCloner' => __DIR__ . '/../..' . '/overrides/symfony/var-dumper/Cloner/VarCloner.php',
         'Symfony\\Component\\VarDumper\\Dumper\\AbstractDumper' => __DIR__ . '/..' . '/symfony/var-dumper/Dumper/AbstractDumper.php',
         'Symfony\\Component\\VarDumper\\Dumper\\CliDumper' => __DIR__ . '/..' . '/symfony/var-dumper/Dumper/CliDumper.php',
         'Symfony\\Component\\VarDumper\\Dumper\\DataDumperInterface' => __DIR__ . '/..' . '/symfony/var-dumper/Dumper/DataDumperInterface.php',

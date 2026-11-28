@@ -3225,7 +3225,7 @@ return array(
     'Symfony\\Component\\VarDumper\\Cloner\\Data' => $baseDir . '/overrides/symfony/var-dumper/Cloner/Data.php',
     'Symfony\\Component\\VarDumper\\Cloner\\DumperInterface' => $vendorDir . '/symfony/var-dumper/Cloner/DumperInterface.php',
     'Symfony\\Component\\VarDumper\\Cloner\\Stub' => $baseDir . '/overrides/symfony/var-dumper/Cloner/Stub.php',
-    'Symfony\\Component\\VarDumper\\Cloner\\VarCloner' => $vendorDir . '/symfony/var-dumper/Cloner/VarCloner.php',
+    'Symfony\\Component\\VarDumper\\Cloner\\VarCloner' => $baseDir . '/overrides/symfony/var-dumper/Cloner/VarCloner.php',
     'Symfony\\Component\\VarDumper\\Dumper\\AbstractDumper' => $vendorDir . '/symfony/var-dumper/Dumper/AbstractDumper.php',
     'Symfony\\Component\\VarDumper\\Dumper\\CliDumper' => $vendorDir . '/symfony/var-dumper/Dumper/CliDumper.php',
     'Symfony\\Component\\VarDumper\\Dumper\\DataDumperInterface' => $vendorDir . '/symfony/var-dumper/Dumper/DataDumperInterface.php',
