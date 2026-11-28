@@ -1937,11 +1937,13 @@ class Helper
     }
 
     /**
-     * Get identifier for queue:work
+     * Get identifier for queue:work and fetch-emails processes.
+     * Installation path is added to the identifier to distinguish processes of different
+     * installations having the same APP_KEY (for example, production and staging on the same server).
      */
     public static function getWorkerIdentifier($salt = '')
     {
-        return md5((config('app.key') ?? '').$salt);
+        return md5((config('app.key') ?? '').base_path().$salt);
     }
 
     /**
