@@ -6583,51 +6583,97 @@ function copyToClipboard(text) {
     $temp.remove();
 }
 
-// Dashboard: open the mailbox settings menu downwards by default and flip it
-// upwards only when it does not fit below (mailboxes in the last row).
-// #app has overflow: hidden, so a menu extending below the page is cut off
-// and can't be scrolled to. In the mailbox and conversation views the menu is
-// not affected, as it is not initialized there.
 function initDashboard()
 {
-	var selector = '.dash-card-footer .dropdown';
+	// https://github.com/freescout-help-desk/freescout/issues/5828
+	$('.dash-card .dropdown').each(function () {
+		var $toggle = $(this);
+		var $menu = $toggle.children('.dropdown-menu:first');
 
-	$(document).on('shown.bs.dropdown', selector, function() {
-		var dropdown = $(this);
-		var menu = dropdown.children('.dropdown-menu:first')[0];
-		var app = document.getElementById('app');
-
-		if (!menu || !app) {
+		if (!$menu.length) {
 			return;
 		}
 
-		// Always start from the downward position, as the menu may have been flipped before.
-		dropdown.removeClass('dropup');
+		// Store original position for subsequent reset
+		var originalPosition = $menu.css('position');
 
-		var page_bottom = app.getBoundingClientRect().bottom;
-		var down = menu.getBoundingClientRect();
+		$toggle.on('shown.bs.dropdown', function () {
+			var toggleRect = $toggle[0].getBoundingClientRect();
+			var menuHeight = $menu.outerHeight();
+			var app = document.getElementById('app');
+			var appRect = app.getBoundingClientRect();
+			var viewport_bottom = Math.min(document.documentElement.clientHeight, appRect.bottom);
+			var viewport_top = Math.max(0, appRect.top);
 
-		// Fits below.
-		if (down.bottom <= page_bottom) {
-			return;
-		}
+			// Calculate available space above and below the toggle
+			var spaceAbove = toggleRect.top - viewport_top;
+			var spaceBelow = viewport_bottom - toggleRect.bottom;
 
-		// Bootstrap triggers this event right after showing the menu,
-		// so the menu is flipped before it is painted.
-		dropdown.addClass('dropup');
-
-		// Keep the menu upwards unless it goes above the top of the page
-		// (the navbar is static, so the page top is not reachable by scrolling)
-		// and cutting off below is smaller than cutting off above.
-		var up = menu.getBoundingClientRect();
-		var cut_above = -(up.top - app.getBoundingClientRect().top);
-		var cut_below = down.bottom - page_bottom;
-
-		if (cut_above > 0 && cut_above > cut_below) {
-			dropdown.removeClass('dropup');
-		}
-	}).on('hidden.bs.dropdown', selector, function() {
-		$(this).removeClass('dropup');
+			// Decide direction: prefer up if there is enough space, otherwise down
+			if (spaceAbove >= menuHeight) {
+				// Opens upwards (enough space, no scrollbar needed)
+				$menu.css({
+					position: 'fixed',
+					left: toggleRect.left + 'px',
+					top: (toggleRect.top) + 'px',
+					bottom: 'auto',
+					transform: 'translateY(-100%)',
+					margin: '0',
+					'max-height': '',
+					'overflow-y': ''
+				});
+			} else if (spaceBelow >= menuHeight) {
+				// Opens downwards (enough space, no scrollbar needed)
+				$menu.css({
+					position: 'fixed',
+					left: toggleRect.left + 'px',
+					top: (toggleRect.bottom) + 'px',
+					bottom: 'auto',
+					transform: 'none',
+					margin: '0',
+					'max-height': '',
+					'overflow-y': ''
+				});
+			} else {
+				// Not enough space either above or below: 
+				// open in the direction with more space and add a scrollbar
+				var maxH, topPos, transformVal;
+				if (spaceAbove > spaceBelow) {
+					// Open upwards with scrollbar
+					maxH = spaceAbove - 10; // 10px safety margin
+					topPos = toggleRect.top;
+					transformVal = 'translateY(-100%)';
+				} else {
+					// Open downwards with scrollbar
+					maxH = spaceBelow - 10; // 10px safety margin
+					topPos = toggleRect.bottom;
+					transformVal = 'none';
+				}
+				
+				$menu.css({
+					position: 'fixed',
+					left: toggleRect.left + 'px',
+					top: topPos + 'px',
+					bottom: 'auto',
+					transform: transformVal,
+					margin: '0',
+					'max-height': maxH + 'px',
+					'overflow-y': 'auto'
+				});
+			}
+		}).on('hidden.bs.dropdown', function () {
+			// Reset position and scroll properties so Bootstrap dropup works again next time
+			$menu.css({
+				position: originalPosition,
+				left: '',
+				top: '',
+				bottom: '',
+				transform: '',
+				margin: '',
+				'max-height': '',
+				'overflow-y': ''
+			});
+		});
 	});
 }
 

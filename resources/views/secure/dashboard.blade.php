@@ -44,7 +44,7 @@
                     <div class="dash-card-footer">
                         <div class="btn-group btn-group-justified btn-group-rounded">
                             @if (\Eventy::filter('mailbox.show_buttons', true, $mailbox) && Auth::user()->can('viewMailboxMenu', Auth::user()))
-                                <div class="btn-group dropdown" data-toggle="tooltip" title="{{ __("Mailbox Settings") }}">
+                                <div class="btn-group dropdown dropup" data-toggle="tooltip" title="{{ __("Mailbox Settings") }}">
                                     <a data-toggle="dropdown" href="#" class="btn btn-trans"><i class="glyphicon glyphicon-cog dropdown-toggle"></i></a>
                                     <ul class="dropdown-menu" role="menu">
                                         @include("mailboxes/settings_menu", ['is_dropdown' => true])
