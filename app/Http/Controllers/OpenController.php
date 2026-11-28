@@ -90,6 +90,13 @@ class OpenController extends Controller
             'photo_url'   => __('Photo'),
         ]);
 
+        // The invitation is bound to the address it was sent to.
+        $validator->after(function ($validator) use ($user, $request) {
+            if (mb_strtolower(trim((string)$request->email)) !== mb_strtolower((string)$user->email)) {
+                $validator->errors()->add('email', __('The invitation has been created for another email.'));
+            }
+        });
+
         // Photo
         $validator->after(function ($validator) use ($user, $request) {
             if ($request->hasFile('photo_url')) {
@@ -110,7 +117,7 @@ class OpenController extends Controller
         }
 
         $request_data = [
-            'email' => $request->email,
+            'email' => $user->email,
             'password' => $request->password,
             'job_title' => $request->job_title,
             'phone' => $request->phone,

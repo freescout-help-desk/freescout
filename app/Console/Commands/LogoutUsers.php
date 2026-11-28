@@ -57,18 +57,15 @@ class LogoutUsers extends Command
 
             // Cycle remember tokens to revoke remember-me cookies and
             // mobile app auth tokens (the token is a part of their key).
-            // Users who have not accepted the invite are skipped:
-            // their remember_token is used as an invite hash.
             $cycled = 0;
-            \App\User::where('invite_state', \App\User::INVITE_STATE_ACTIVATED)
-                ->chunkById(100, function ($users) use (&$cycled) {
-                    foreach ($users as $user) {
-                        \DB::table('users')
-                            ->where('id', $user->id)
-                            ->update(['remember_token' => \Str::random(60)]);
-                        $cycled++;
-                    }
-                });
+            \App\User::chunkById(100, function ($users) use (&$cycled) {
+                foreach ($users as $user) {
+                    \DB::table('users')
+                        ->where('id', $user->id)
+                        ->update(['remember_token' => \Str::random(60)]);
+                    $cycled++;
+                }
+            });
             $this->line('Revoked remember tokens: '.$cycled);
         } catch (\Exception $e) {
             $this->error($e->getMessage());

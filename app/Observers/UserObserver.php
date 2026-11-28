@@ -49,6 +49,12 @@ class UserObserver
             return;
         }
 
+        // Revoke a pending invitation: the invite link may have been
+        // delivered to the previous address. A new invite has to be sent.
+        if ($user->getOriginal('invite_hash')) {
+            $user->invite_hash = '';
+        }
+
         $emails = array_filter(array_unique([
             (string) $user->getOriginal('email'),
             (string) $user->email,

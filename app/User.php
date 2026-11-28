@@ -737,11 +737,11 @@ class User extends Authenticatable
         if ($this->invite_state == self::INVITE_STATE_ACTIVATED) {
             return false;
         }
-        // We are using remember_token as a hash for invite
-        if (!$this->invite_hash) {
-            $this->setInviteHash();
-            $this->save();
-        }
+        // Rotate the invite hash on every send, so that links from
+        // previously sent invitations stop working.
+        // We are using remember_token as a hash for invite.
+        $this->setInviteHash();
+        $this->save();
 
         try {
             \App\Misc\Mail::setSystemMailDriver();

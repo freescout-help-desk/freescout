@@ -35,7 +35,7 @@
                                 <label for="email" class="col-sm-4 control-label">{{ __('Your Email') }}</label>
 
                                 <div class="col-sm-7">
-                                    <input id="email" type="email" class="form-control input-sized" name="email" value="{{ old('email', $user->email) }}" maxlength="100" required autofocus>
+                                    <input id="email" type="email" class="form-control input-sized" name="email" value="{{ old('email', $user->email) }}" maxlength="100" readonly required>
 
                                     @include('partials/field_error', ['field'=>'email'])
                                 </div>
